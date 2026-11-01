@@ -134,13 +134,14 @@ def run(pair: list[str], period: str, formation_years: float, z_window: int,
                     "z_window": z_window, "entry_z": entry, "cost_per_trade": cost,
                     **stats},
         "dates": [d.strftime("%Y-%m-%d") for d in strategy.index],
-        "zscore": z.loc[strategy.index].round(3).tolist(),
+        "zscore": [None if pd.isna(v) else round(float(v), 3)
+                   for v in z.loc[strategy.index]],
         "position": pos.loc[strategy.index].tolist(),
         "equity_strategy": equity.round(4).tolist(),
         "equity_bench": eq_bench.round(4).tolist(),
         "entry_z": entry,
     }
-    (DASH / "pairs-trading.json").write_text(json.dumps(dash))
+    (DASH / "pairs-trading.json").write_text(json.dumps(dash, allow_nan=False))
     return {"pair": pair, **stats}
 
 
