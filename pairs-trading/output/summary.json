@@ -1,0 +1,17 @@
+{
+  "pair": [
+    "V",
+    "MA"
+  ],
+  "total_return": 0.0713,
+  "cagr": 0.0353,
+  "ann_vol": 0.0675,
+  "sharpe": 0.548,
+  "max_drawdown": -0.0711,
+  "days": 500,
+  "n_trades": 15,
+  "time_in_market": 0.443,
+  "coint_pvalue": 0.0098,
+  "hedge_ratio": 0.8955,
+  "buy_hold_v": 0.4484
+}
