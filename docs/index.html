@@ -189,8 +189,8 @@ async function load(name) {
         xanchor: "left", font: { color: "#d29922" } },
       { x: mc.markers.es95, y: 0.93, yref: "paper", text: "ES 95%", showarrow: false,
         xanchor: "right", font: { color: "#f85149" } },
-      { x: mc.markers.mean, y: 1, yref: "paper", text: "mean", showarrow: false,
-        xanchor: "right", font: { color: "#3fb950" } }],
+      { x: mc.markers.mean, y: 0.84, yref: "paper", text: "mean", showarrow: false,
+        xanchor: "left", font: { color: "#3fb950" } }],
     xaxis: { title: "portfolio value ($)" }, yaxis: { title: "paths" } });
   plot("mc-cone", [
     { x: mc.cone.days, y: mc.cone.p95, mode: "lines", line: { width: 0 },
