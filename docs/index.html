@@ -148,7 +148,7 @@ function card(k, v, cls) {
 const signed = v => (v >= 0 ? "pos" : "neg");
 
 async function load(name) {
-  const r = await fetch("data/" + name);
+  const r = await fetch("data/" + name, { cache: "no-store" });
   return r.json();
 }
 
