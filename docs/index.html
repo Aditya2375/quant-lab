@@ -142,6 +142,11 @@ const CFG = { responsive: true, displayModeBar: false };
 const pct = v => (v * 100).toFixed(1) + "%";
 const usd = v => "$" + Number(v).toLocaleString("en-US", { maximumFractionDigits: 0 });
 
+function plot(id, traces, layout) {
+  const el = document.getElementById(id);
+  el.innerHTML = "";
+  Plotly.newPlot(el, traces, layout, CFG);
+}
 function card(k, v, cls) {
   return `<div class="card"><div class="k">${k}</div><div class="v ${cls || ""}">${v}</div></div>`;
 }
@@ -168,7 +173,7 @@ async function load(name) {
     card("Expected value", usd(s.expected_final), "neu"),
     card("P(loss)", pct(s.prob_loss), "neu"),
   ].join("");
-  Plotly.newPlot("mc-hist", [{
+  plot("mc-hist", [{
     x: mc.hist.centers, y: mc.hist.counts, type: "bar",
     marker: { color: "#58a6ff" }, name: "simulated outcomes"
   }], { ...LAYOUT, title: { text: `Value of $${s.start_value.toLocaleString()} after 1 year` },
@@ -186,8 +191,8 @@ async function load(name) {
         xanchor: "right", font: { color: "#f85149" } },
       { x: mc.markers.mean, y: 1, yref: "paper", text: "mean", showarrow: false,
         xanchor: "right", font: { color: "#3fb950" } }],
-    xaxis: { title: "portfolio value ($)" }, yaxis: { title: "paths" } }, CFG);
-  Plotly.newPlot("mc-cone", [
+    xaxis: { title: "portfolio value ($)" }, yaxis: { title: "paths" } });
+  plot("mc-cone", [
     { x: mc.cone.days, y: mc.cone.p95, mode: "lines", line: { width: 0 },
       name: "5-95%", showlegend: false },
     { x: mc.cone.days, y: mc.cone.p5, mode: "lines", fill: "tonexty",
@@ -199,7 +204,7 @@ async function load(name) {
     { x: mc.cone.days, y: mc.cone.p50, mode: "lines",
       line: { color: "#e6edf3", width: 2 }, name: "median" },
   ], { ...LAYOUT, title: { text: "cone of outcomes" },
-       xaxis: { title: "trading days" }, yaxis: { title: "value ($)" } }, CFG);
+       xaxis: { title: "trading days" }, yaxis: { title: "value ($)" } });
 
   // ---- 02 Pairs trading ------------------------------------------------------
   const p = pt.summary;
@@ -214,7 +219,7 @@ async function load(name) {
     card("Time in market", pct(p.time_in_market), "neu"),
   ].join("");
   const longShade = [], shortShade = [];
-  Plotly.newPlot("pt-z", [
+  plot("pt-z", [
     { x: pt.dates, y: pt.zscore, mode: "lines", line: { color: "#58a6ff", width: 1.4 },
       name: "spread Z-score" },
     { x: pt.dates, y: pt.dates.map(() => pt.entry_z), mode: "lines",
@@ -227,14 +232,14 @@ async function load(name) {
        yaxis: { title: "z-score", range: [-4, 4] },
        yaxis2: { overlaying: "y", side: "right", range: [-1.6, 1.6],
                  tickvals: [-1, 0, 1], ticktext: ["short", "flat", "long"],
-                 showgrid: false } }, CFG);
-  Plotly.newPlot("pt-eq", [
+                 showgrid: false } });
+  plot("pt-eq", [
     { x: pt.dates, y: pt.equity_strategy, mode: "lines",
       line: { color: "#3fb950", width: 1.8 }, name: "pairs strategy" },
     { x: pt.dates, y: pt.equity_bench, mode: "lines",
       line: { color: "#8b98a9", width: 1.4 }, name: "buy & hold V" },
   ], { ...LAYOUT, title: { text: "equity curves (growth of $1)" },
-       yaxis: { title: "value ($)" } }, CFG);
+       yaxis: { title: "value ($)" } });
 
   // ---- 03 MA crossover -------------------------------------------------------
   const m = ma.summary;
@@ -246,20 +251,20 @@ async function load(name) {
     card("Max drawdown", pct(m.max_drawdown), "neg"),
     card("Time in market", pct(m.time_in_market), "neu"),
   ].join("");
-  Plotly.newPlot("ma-eq", [
+  plot("ma-eq", [
     { x: ma.dates, y: ma.equity_strategy, mode: "lines",
       line: { color: "#3fb950", width: 1.8 }, name: "50/200 crossover" },
     { x: ma.dates, y: ma.equity_bench, mode: "lines",
       line: { color: "#8b98a9", width: 1.4 }, name: "buy & hold" },
   ], { ...LAYOUT, title: { text: "SPY: strategy vs benchmark, log scale" },
-       yaxis: { title: "value ($)", type: "log" } }, CFG);
-  Plotly.newPlot("ma-dd", [
+       yaxis: { title: "value ($)", type: "log" } });
+  plot("ma-dd", [
     { x: ma.dates, y: ma.dd_strategy, mode: "lines", fill: "tozeroy",
       line: { color: "#3fb950", width: 1 }, name: "strategy" },
     { x: ma.dates, y: ma.dd_bench, mode: "lines", fill: "tozeroy",
       line: { color: "#8b98a9", width: 1 }, name: "buy & hold" },
   ], { ...LAYOUT, title: { text: "drawdown from peak" },
-       yaxis: { tickformat: ".0%" } }, CFG);
+       yaxis: { tickformat: ".0%" } });
 })().catch(e => {
   document.querySelectorAll(".chart").forEach(
     el => el.innerHTML = '<div class="loading">failed to load data</div>');
