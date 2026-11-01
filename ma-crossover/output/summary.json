@@ -1,0 +1,19 @@
+{
+  "ticker": "SPY",
+  "total_return": 2.892,
+  "cagr": 0.1006,
+  "ann_vol": 0.1427,
+  "sharpe": 0.743,
+  "max_drawdown": -0.3372,
+  "days": 3573,
+  "n_switches": 13,
+  "time_in_market": 0.85,
+  "buy_and_hold": {
+    "total_return": 5.8604,
+    "cagr": 0.1455,
+    "ann_vol": 0.1661,
+    "sharpe": 0.901,
+    "max_drawdown": -0.3372,
+    "days": 3573
+  }
+}
