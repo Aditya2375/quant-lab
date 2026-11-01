@@ -1,0 +1,25 @@
+{
+  "tickers": [
+    "AAPL",
+    "MSFT",
+    "GOOGL",
+    "NVDA"
+  ],
+  "weights": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+  ],
+  "estimation_period": "5y",
+  "sims": 10000,
+  "horizon_days": 252,
+  "start_value": 10000.0,
+  "var_95": 2517.18,
+  "es_95": 3295.53,
+  "var_99": 3787.67,
+  "es_99": 4338.38,
+  "prob_loss": 0.2781,
+  "expected_final": 12312.07,
+  "median_final": 11818.85
+}
