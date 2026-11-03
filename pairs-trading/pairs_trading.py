@@ -39,19 +39,23 @@ DASH = Path(__file__).resolve().parent.parent / "docs" / "data"
 
 def run(pair: list[str], period: str, formation_years: float, z_window: int,
         entry: float, cost: float) -> dict:
+    if len(pair)!=2 or pair[0]==pair[1] or formation_years<=0 or z_window<2 or entry<=0 or not 0<=cost<1: raise ValueError("Invalid pair/parameters")
     y, x = pair
     prices = load_prices(pair, period)
     split = prices.index[0] + pd.Timedelta(days=int(formation_years * 365))
-    form, trade = prices.loc[:split], prices.loc[split:]
+    form, trade = prices.loc[prices.index<split], prices.loc[prices.index>=split]
+    if len(form)<60 or len(trade)<z_window+2: raise ValueError("Insufficient disjoint formation/trading data")
 
     # --- formation: cointegration test + hedge ratio --------------------------
-    score, pvalue, _ = coint(form[y], form[x])
+    score, pvalue, _ = coint(np.log(form[y]), np.log(form[x]))
     X = sm.add_constant(np.log(form[x]))
     fit = sm.OLS(np.log(form[y]), X).fit()
     beta = float(fit.params.iloc[1])
 
+    if not np.isfinite(pvalue) or pvalue>0.05: raise ValueError("Formation log-price pair failed cointegration screen; no strategy result emitted")
+    if not np.isfinite(beta) or beta<=0: raise ValueError("Positive finite hedge ratio required")
     # --- trading: spread, z-score, positions ----------------------------------
-    spread = trade[y] - beta * trade[x]
+    spread = np.log(trade[y]) - float(fit.params.iloc[0]) - beta * np.log(trade[x])
     mu = spread.rolling(z_window).mean()
     sigma = spread.rolling(z_window).std()
     z = (spread - mu) / sigma
@@ -77,9 +81,10 @@ def run(pair: list[str], period: str, formation_years: float, z_window: int,
     # --- P&L: dollar-neutral spread returns, costs on position changes --------
     ret_y = trade[y].pct_change()
     ret_x = trade[x].pct_change()
-    spread_ret = ret_y - beta * ret_x
-    trades = pos.diff().abs().fillna(0)
-    strategy = pos.shift(1) * spread_ret - cost * trades
+    spread_ret = (ret_y - beta * ret_x)/(1+abs(beta))
+    executed=pos.shift(1).fillna(0)
+    trades=executed.diff().abs().fillna(executed.abs())
+    strategy=executed*spread_ret-cost*trades
     strategy = strategy.dropna()
 
     if pvalue > 0.05:
@@ -130,7 +135,7 @@ def run(pair: list[str], period: str, formation_years: float, z_window: int,
     # --- dashboard payload ------------------------------------------------------
     eq_bench = bh
     dash = {
-        "summary": {"pair": pair, "formation_years": formation_years,
+        "summary": {"method_version":2,"data_start":str(prices.index[0].date()),"data_end":str(prices.index[-1].date()),"pair": pair, "formation_years": formation_years,
                     "z_window": z_window, "entry_z": entry, "cost_per_trade": cost,
                     **stats},
         "dates": [d.strftime("%Y-%m-%d") for d in strategy.index],
