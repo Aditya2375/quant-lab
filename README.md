@@ -1,52 +1,21 @@
-# quant-lab
+# quant-lab / Numerical methods under review
 
-Three core quant-finance techniques, implemented from scratch in Python and
-tested on real market data.
+Live: https://aditya2375.github.io/quant-lab/
 
-**Interactive results dashboard: https://aditya2375.github.io/quant-lab/** -
-the charts below, explorable in the browser (zoom, hover, toggle series). No
-setup needed to view it.
+Educational Python implementations of Monte Carlo risk, pairs trading and moving-average crossover. Not investment advice. Historical metrics and charts are withdrawn pending corrected market-data reruns. Old JSON/output artifacts remain for provenance, not current or validated performance.
 
-| # | Project | Technique | Headline result |
-|---|---------|-----------|-----------------|
-| 1 | [monte-carlo-risk](monte-carlo-risk/) | Correlated Monte Carlo simulation | 1y VaR 95% of -$2,517 and expected shortfall of -$3,296 on a $10k equal-weight AAPL/MSFT/GOOGL/NVDA portfolio; 27.8% chance of a losing year |
-| 2 | [pairs-trading](pairs-trading/) | Engle-Granger cointegration + Z-score mean reversion | V/MA is genuinely cointegrated (p = 0.01); the strategy returned +7.1% over 2 out-of-sample years at a -7.1% max drawdown, vs +44.8% buy-and-hold |
-| 3 | [ma-crossover](ma-crossover/) | 50/200 golden-cross backtest, honest testing | On 15y of SPY the rule trails buy-and-hold (10.1% vs 14.6% CAGR) - most simple strategies fail exactly here |
+## Corrections
 
-## Layout
+Monte Carlo estimates annual log-return means, so simulation now uses that mean directly instead of subtracting half the variance a second time. Covariance is checked positive semidefinite and singular matrices supported. Simulation dimensions and total allocation are bounded.
 
-```
-monte-carlo-risk/    Monte Carlo portfolio risk (VaR / expected shortfall)
-pairs-trading/       cointegration screen + pairs-trading backtest
-ma-crossover/        moving-average crossover backtest vs buy-and-hold
-docs/                the dashboard site (GitHub Pages) + generated JSON
-scripts/common.py    shared data download + performance metrics
-```
+Pairs now tests and fits log prices, trades the matching log spread, separates formation/trading dates, rejects failed screens, normalizes illustrative leg returns by gross exposure and charges on the lagged executed position changes. It is not necessarily dollar-neutral and still omits borrow, financing and realistic execution costs. Historical pair p-values and performance must not be reused.
 
-## Quick start
+Performance drawdown now includes the initial unit-capital peak. Invalid return paths/prices and insufficient histories are rejected. Price caches are keyed by ticker plus requested period with validated symbols; old filename caches are retained but ignored. Prices must be finite/positive with sorted unique dates. Yahoo downloads have a bounded timeout.
 
-```sh
-pip install -r requirements.txt
-python monte-carlo-risk/monte_carlo.py     # add --sims 50000 for a tighter tail
-python pairs-trading/pairs_trading.py      # --pair KO PEP to try another pair
-python ma-crossover/ma_crossover.py        # --ticker QQQ, --fast 20 --slow 100 ...
-```
+## Reproduction status
 
-Each script downloads its own data (cached in `data/`), prints a JSON summary,
-saves charts to its `output/` folder, and refreshes the JSON the dashboard
-renders. Every script is deterministic (`--seed` for the simulation), so the
-published numbers are reproducible.
+Original adjusted-price snapshots and package versions were not archived. A fixed random seed does not reproduce changing market data or provider revisions. Corrected code passes deterministic synthetic tests, not a rerun against the original market sample. Before publishing results, rerun all methods, archive exact inputs with dates/hashes and dependency versions, and inspect generated charts and metrics. Parameter changes/selection bias remain meaningful risks.
 
-## Notes on honesty
+Install requirements.txt and run each Python script as documented in its folder. No paid data or brokerage action. Tests: python -m unittest discover -s tests.
 
-* The Monte Carlo model assumes log-normal returns and stable correlations;
-  real tails are fatter and crash correlations worse.
-* The pairs strategy estimates its hedge ratio on a separate formation
-  window and pays costs on every position change; most candidate pairs fail
-  the cointegration screen (KO/PEP included) and are rejected before
-  backtesting.
-* The crossover backtest delays signals one day (no lookahead), charges 10
-  bps per switch, and reports against buy-and-hold.
-
-Market data: daily adjusted closes via
-[yfinance](https://github.com/ranaroussi/yfinance) (Yahoo Finance).
+Support: adityakulkarnicoding@gmail.com
