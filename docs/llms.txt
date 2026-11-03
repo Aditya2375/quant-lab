@@ -1,0 +1,2 @@
+# Quant-lab
+Educational methods, not investment advice. Historical market outputs withdrawn after drift/spread/accounting/drawdown issues. Corrected code tested synthetically; original market data/environment not archived, corrected market rerun outstanding.
