@@ -34,15 +34,21 @@ DASH = Path(__file__).resolve().parent.parent / "docs" / "data"
 def simulate(mu: np.ndarray, cov: np.ndarray, weights: np.ndarray,
              n_sims: int, days: int, start_value: float, seed: int) -> np.ndarray:
     """Correlated GBM paths, daily rebalanced to `weights`. Returns (n_sims, days+1)."""
+    if not (1<=n_sims<=100000 and 1<=days<=2520 and start_value>0 and np.isfinite(start_value)): raise ValueError("Invalid simulation bounds")
+    if len(mu)<1 or len(mu)>20 or cov.shape!=(len(mu),len(mu)) or weights.shape!=(len(mu),): raise ValueError("Dimension mismatch")
+    if not np.isfinite(mu).all() or not np.isfinite(cov).all() or not np.isfinite(weights).all() or (weights<0).any() or not np.isclose(weights.sum(),1): raise ValueError("Finite long-only unit weights required")
+    if n_sims*days*len(mu)>20000000: raise ValueError("Simulation exceeds memory budget")
+    if not np.allclose(cov,cov.T) or np.linalg.eigvalsh(cov).min()<-1e-10: raise ValueError("Covariance must be positive semidefinite")
     rng = np.random.default_rng(seed)
-    chol = np.linalg.cholesky(cov)
+    eigen,vec=np.linalg.eigh(cov)
+    chol=vec @ np.diag(np.sqrt(np.maximum(eigen,0)))
     drift = mu / TRADING_DAYS
     n_assets = len(mu)
 
     z = rng.standard_normal((n_sims, days, n_assets))
     # daily log returns per asset: drift - 0.5*var + correlated shock
     var_daily = np.diag(cov) / TRADING_DAYS
-    log_ret = (drift - 0.5 * var_daily) + z @ chol.T / np.sqrt(TRADING_DAYS)
+    log_ret = drift + z @ chol.T / np.sqrt(TRADING_DAYS)
     simple_ret = np.exp(log_ret) - 1.0
     port_ret = simple_ret @ weights  # (n_sims, days)
     paths = start_value * np.cumprod(1 + port_ret, axis=1)
@@ -50,6 +56,7 @@ def simulate(mu: np.ndarray, cov: np.ndarray, weights: np.ndarray,
 
 
 def risk_metrics(final: np.ndarray, start_value: float) -> dict:
+    if len(final)<2 or not np.isfinite(final).all() or start_value<=0: raise ValueError("Invalid final values")
     pnl = final - start_value
     out = {}
     for conf in (0.95, 0.99):
@@ -117,6 +124,8 @@ def main() -> None:
     plt.close(fig)
 
     summary = {
+        "method_version": 2,
+        "data_start": str(prices.index[0].date()), "data_end": str(prices.index[-1].date()),
         "tickers": args.tickers,
         "weights": list(weights.round(4)),
         "estimation_period": args.period,
