@@ -36,8 +36,10 @@ DASH = Path(__file__).resolve().parent.parent / "docs" / "data"
 
 
 def run(ticker: str, period: str, fast: int, slow: int, cost: float) -> dict:
+    if fast<1 or slow<=fast or not 0<=cost<1: raise ValueError("Require 1<=fast<slow and 0<=cost<1")
     px = load_prices([ticker], period)[ticker]
 
+    if len(px)<slow+2: raise ValueError("Insufficient price history")
     sma_fast = px.rolling(fast).mean()
     sma_slow = px.rolling(slow).mean()
     signal = (sma_fast > sma_slow).astype(float)
@@ -81,8 +83,8 @@ def run(ticker: str, period: str, fast: int, slow: int, cost: float) -> dict:
     style_ax(axes[1], "equity curves, log scale (growth of $1)", ylabel="value ($)")
     axes[1].legend()
 
-    dd_s = eq_s / eq_s.cummax() - 1
-    dd_b = eq_b / eq_b.cummax() - 1
+    dd_s = eq_s / eq_s.cummax().clip(lower=1.0) - 1
+    dd_b = eq_b / eq_b.cummax().clip(lower=1.0) - 1
     axes[2].fill_between(dd_s.index, dd_s, 0, alpha=0.6, label="strategy")
     axes[2].fill_between(dd_b.index, dd_b, 0, alpha=0.4, label="buy & hold")
     style_ax(axes[2], "drawdown", ylabel="from peak")
@@ -92,7 +94,7 @@ def run(ticker: str, period: str, fast: int, slow: int, cost: float) -> dict:
     plt.close(fig)
 
     dash = {
-        "summary": {"ticker": ticker, "fast": fast, "slow": slow,
+        "summary": {"method_version":2,"data_start":str(px.index[0].date()),"data_end":str(px.index[-1].date()),"ticker": ticker, "fast": fast, "slow": slow,
                     "cost_per_switch": cost, **stats},
         "dates": [d.strftime("%Y-%m-%d") for d in eq_s.index],
         "equity_strategy": eq_s.round(4).tolist(),
