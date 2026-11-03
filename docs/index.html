@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>quant-lab - three quant finance projects, simulated and backtested</title>
-<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+
 <style>
   :root {
     --bg: #0b0f14; --panel: #11171f; --border: #1f2a37; --text: #e6edf3;
@@ -55,14 +55,16 @@
            color: var(--muted); font-size: 0.9rem; }
   footer a { color: var(--blue); text-decoration: none; }
   .loading { color: var(--muted); padding: 40px; text-align: center; }
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px}.chart{height:auto;min-height:120px} .chart p{padding:24px;color:var(--muted)}@media(max-width:500px){header{padding-top:32px}.wrap{padding-left:16px;padding-right:16px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
+<meta name="description" content="Educational quant-finance methods. Historical outputs withdrawn pending corrected market-data reruns."><meta name="referrer" content="no-referrer"><link rel="canonical" href="https://aditya2375.github.io/quant-lab/"><meta property="og:title" content="Quant-lab / Methods under review"><meta property="og:description" content="Corrected code, synthetic regression tests, historical outputs withdrawn."><meta property="og:type" content="website"><meta property="og:url" content="https://aditya2375.github.io/quant-lab/"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1>quant<span>-lab</span></h1>
     <p>Three core quant-finance techniques, implemented from scratch in Python and
-       tested on real market data: Monte Carlo portfolio risk, cointegration-based
+       originally run on historical market data, with old outputs withdrawn pending a corrected rerun: Monte Carlo portfolio risk, cointegration-based
        pairs trading, and a moving-average crossover backtest with honest
        accounting for lookahead bias and transaction costs.</p>
     <div class="links">
@@ -71,15 +73,12 @@
       <a class="btn" href="https://github.com/Aditya2375/quant-lab/tree/main/pairs-trading">2 · Pairs trading</a>
       <a class="btn" href="https://github.com/Aditya2375/quant-lab/tree/main/ma-crossover">3 · MA crossover</a>
     </div>
-  </header>
+  <div class="note"><b>Historical results withdrawn.</b> Numerical-method issues were found in the Monte Carlo drift, pairs spread/accounting and initial-peak drawdown. Corrected code passes synthetic regression tests, but the original market inputs are not archived here. No replacement market performance is claimed. Educational only, not investment advice.</div></header>
 
   <section id="mc">
     <div class="sec-head"><span class="num">01</span><h2>Monte Carlo portfolio risk</h2>
       <span class="tag">simulation</span></div>
-    <p class="desc">An equal-weight portfolio of <code id="mc-tickers"></code>, with drift and
-      covariance estimated from <span id="mc-period"></span> of daily log returns. We simulate
-      <span id="mc-sims"></span> correlated one-year paths and read the tail risk off the
-      resulting distribution: <b>VaR 95%</b> is the loss only 5% of outcomes exceed, and
+    <p class="desc">An equal-weight portfolio of <code id="mc-tickers"></code>, using estimated log-return drift and covariance. Corrected simulated results have not been republished. In a simulation, <b>VaR 95%</b> is the loss only 5% of outcomes exceed, and
       <b>expected shortfall</b> is the average of that worst 5%.</p>
     <div class="cards" id="mc-cards"></div>
     <div class="grid2">
@@ -87,20 +86,13 @@
       <div class="chart" id="mc-cone"><div class="loading">loading chart...</div></div>
     </div>
     <div class="note"><b>Honest limits.</b> GBM assumes log-normal returns and a stable
-      correlation matrix. Real markets have fat tails, and correlations spike toward 1 in a
-      crash - both make the true tail risk worse than this estimate.</div>
+      correlation matrix. Real-market tails and correlations can differ from the model. Neither the old nor corrected model provides a guaranteed lower bound on risk.</div>
   </section>
 
   <section id="pairs">
     <div class="sec-head"><span class="num">02</span><h2>Pairs trading / statistical arbitrage</h2>
       <span class="tag">cointegration</span></div>
-    <p class="desc">Visa and Mastercard pass the Engle-Granger cointegration test on a
-      three-year formation window (p = <span id="pt-p"></span>), so their spread should
-      mean-revert. The hedge ratio (<span id="pt-beta"></span>) comes only from that window.
-      In the two-year trading window we go long the spread at -2 standard deviations, short
-      at +2, exit at the mean - with costs on every position change. Most candidate pairs
-      (KO/PEP, XOM/CVX, JPM/BAC...) fail the cointegration test outright; that filter is the
-      point.</p>
+    <p class="desc">The earlier model fitted log prices but traded a level-price spread, so its published metrics are withdrawn. The corrected implementation tests log-price cointegration, uses a matching log spread, disjoint windows and gross-normalized illustrative returns. Failed screens stop the run. It still excludes borrowing, financing and execution frictions.</p>
     <div class="cards" id="pt-cards"></div>
     <div class="chart" id="pt-z"><div class="loading">loading chart...</div></div>
     <div class="chart" id="pt-eq"><div class="loading">loading chart...</div></div>
@@ -115,161 +107,18 @@
     <p class="desc">The golden-cross rule on <code>SPY</code> over 15 years: hold while the
       50-day average is above the 200-day, otherwise sit in cash. Signals are delayed one day
       to remove lookahead bias, every switch pays 10 bps, and the benchmark is plain
-      buy-and-hold. The result below is what honest testing usually does to simple
-      strategies.</p>
+      buy-and-hold. The earlier result is withdrawn until initial-peak drawdown and the full run are rechecked.</p>
     <div class="cards" id="ma-cards"></div>
     <div class="chart" id="ma-eq"><div class="loading">loading chart...</div></div>
     <div class="chart" id="ma-dd"><div class="loading">loading chart...</div></div>
     <div class="note"><b>Honest limits.</b> The rule spends most of its life in the market
-      and exits late in fast crashes, so it lags buy-and-hold in a long bull run. Its real
-      use is as a baseline every fancier strategy must beat.</div>
+      and exits late in fast crashes, so it lags buy-and-hold in a long bull run. It is an educational baseline, not a recommendation.</div>
   </section>
 
   <footer>
-    Data: daily adjusted closes via yfinance. Everything is reproducible - each project is a
-    single Python script with a seeded RNG, and this page renders the JSON those scripts
-    emit. <a href="https://github.com/Aditya2375/quant-lab">Aditya2375/quant-lab</a>
+    Data: daily adjusted closes via yfinance. A fixed seed alone does not reproduce changing market data. Original price snapshots and environment locks were not archived. Existing JSON remains in the repo for provenance but is not a corrected result. <a href="https://github.com/Aditya2375/quant-lab">Aditya2375/quant-lab</a>
   </footer>
 </div>
 
-<script>
-const LAYOUT = {
-  paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)",
-  font: { color: "#8b98a9" }, margin: { t: 36, r: 16, b: 44, l: 56 },
-  legend: { orientation: "h", y: -0.22 }
-};
-const CFG = { responsive: true, displayModeBar: false };
-const pct = v => (v * 100).toFixed(1) + "%";
-const usd = v => "$" + Number(v).toLocaleString("en-US", { maximumFractionDigits: 0 });
-
-function plot(id, traces, layout) {
-  const el = document.getElementById(id);
-  el.innerHTML = "";
-  Plotly.newPlot(el, traces, layout, CFG);
-}
-function card(k, v, cls) {
-  return `<div class="card"><div class="k">${k}</div><div class="v ${cls || ""}">${v}</div></div>`;
-}
-const signed = v => (v >= 0 ? "pos" : "neg");
-
-async function load(name) {
-  const r = await fetch("data/" + name, { cache: "no-store" });
-  return r.json();
-}
-
-(async () => {
-  const [mc, pt, ma] = await Promise.all(
-    ["monte-carlo.json", "pairs-trading.json", "ma-crossover.json"].map(load));
-
-  // ---- 01 Monte Carlo ------------------------------------------------------
-  const s = mc.summary;
-  document.getElementById("mc-tickers").textContent = s.tickers.join(", ");
-  document.getElementById("mc-period").textContent = s.estimation_period;
-  document.getElementById("mc-sims").textContent = s.sims.toLocaleString();
-  document.getElementById("mc-cards").innerHTML = [
-    card("VaR 95% (1y)", "-" + usd(s.var_95), "neg"),
-    card("Exp. shortfall 95%", "-" + usd(s.es_95), "neg"),
-    card("VaR 99% (1y)", "-" + usd(s.var_99), "neg"),
-    card("Expected value", usd(s.expected_final), "neu"),
-    card("P(loss)", pct(s.prob_loss), "neu"),
-  ].join("");
-  plot("mc-hist", [{
-    x: mc.hist.centers, y: mc.hist.counts, type: "bar",
-    marker: { color: "#58a6ff" }, name: "simulated outcomes"
-  }], { ...LAYOUT, title: { text: `Value of $${s.start_value.toLocaleString()} after 1 year` },
-    shapes: [
-      { type: "line", x0: mc.markers.var95, x1: mc.markers.var95, y0: 0, y1: 1, yref: "paper",
-        line: { color: "#d29922", width: 2 } },
-      { type: "line", x0: mc.markers.es95, x1: mc.markers.es95, y0: 0, y1: 1, yref: "paper",
-        line: { color: "#f85149", width: 2 } },
-      { type: "line", x0: mc.markers.mean, x1: mc.markers.mean, y0: 0, y1: 1, yref: "paper",
-        line: { color: "#3fb950", width: 2, dash: "dot" } }],
-    annotations: [
-      { x: mc.markers.var95, y: 1, yref: "paper", text: "VaR 95%", showarrow: false,
-        xanchor: "left", font: { color: "#d29922" } },
-      { x: mc.markers.es95, y: 0.93, yref: "paper", text: "ES 95%", showarrow: false,
-        xanchor: "right", font: { color: "#f85149" } },
-      { x: mc.markers.mean, y: 0.84, yref: "paper", text: "mean", showarrow: false,
-        xanchor: "left", font: { color: "#3fb950" } }],
-    xaxis: { title: "portfolio value ($)" }, yaxis: { title: "paths" } });
-  plot("mc-cone", [
-    { x: mc.cone.days, y: mc.cone.p95, mode: "lines", line: { width: 0 },
-      name: "5-95%", showlegend: false },
-    { x: mc.cone.days, y: mc.cone.p5, mode: "lines", fill: "tonexty",
-      fillcolor: "rgba(88,166,255,0.18)", line: { width: 0 }, name: "5th-95th pct" },
-    { x: mc.cone.days, y: mc.cone.p75, mode: "lines", line: { width: 0 },
-      showlegend: false },
-    { x: mc.cone.days, y: mc.cone.p25, mode: "lines", fill: "tonexty",
-      fillcolor: "rgba(88,166,255,0.35)", line: { width: 0 }, name: "25th-75th pct" },
-    { x: mc.cone.days, y: mc.cone.p50, mode: "lines",
-      line: { color: "#e6edf3", width: 2 }, name: "median" },
-  ], { ...LAYOUT, title: { text: "cone of outcomes" },
-       xaxis: { title: "trading days" }, yaxis: { title: "value ($)" } });
-
-  // ---- 02 Pairs trading ------------------------------------------------------
-  const p = pt.summary;
-  document.getElementById("pt-p").textContent = p.coint_pvalue;
-  document.getElementById("pt-beta").textContent = p.hedge_ratio;
-  document.getElementById("pt-cards").innerHTML = [
-    card("Total return (2y)", pct(p.total_return), signed(p.total_return)),
-    card("Sharpe", p.sharpe, signed(p.sharpe)),
-    card("Max drawdown", pct(p.max_drawdown), "neg"),
-    card("Ann. volatility", pct(p.ann_vol), "neu"),
-    card("Position changes", p.n_trades, "neu"),
-    card("Time in market", pct(p.time_in_market), "neu"),
-  ].join("");
-  const longShade = [], shortShade = [];
-  plot("pt-z", [
-    { x: pt.dates, y: pt.zscore, mode: "lines", line: { color: "#58a6ff", width: 1.4 },
-      name: "spread Z-score" },
-    { x: pt.dates, y: pt.dates.map(() => pt.entry_z), mode: "lines",
-      line: { color: "#f85149", width: 1, dash: "dash" }, name: "+2 entry" },
-    { x: pt.dates, y: pt.dates.map(() => -pt.entry_z), mode: "lines",
-      line: { color: "#f85149", width: 1, dash: "dash" }, name: "-2 entry" },
-    { x: pt.dates, y: pt.position, mode: "lines", yaxis: "y2", step: true,
-      line: { color: "#bc8cff", width: 1.4 }, name: "position (right)" },
-  ], { ...LAYOUT, title: { text: "V/MA spread Z-score and position" },
-       yaxis: { title: "z-score", range: [-4, 4] },
-       yaxis2: { overlaying: "y", side: "right", range: [-1.6, 1.6],
-                 tickvals: [-1, 0, 1], ticktext: ["short", "flat", "long"],
-                 showgrid: false } });
-  plot("pt-eq", [
-    { x: pt.dates, y: pt.equity_strategy, mode: "lines",
-      line: { color: "#3fb950", width: 1.8 }, name: "pairs strategy" },
-    { x: pt.dates, y: pt.equity_bench, mode: "lines",
-      line: { color: "#8b98a9", width: 1.4 }, name: "buy & hold V" },
-  ], { ...LAYOUT, title: { text: "equity curves (growth of $1)" },
-       yaxis: { title: "value ($)" } });
-
-  // ---- 03 MA crossover -------------------------------------------------------
-  const m = ma.summary;
-  document.getElementById("ma-cards").innerHTML = [
-    card("Strategy CAGR", pct(m.cagr), signed(m.cagr)),
-    card("Buy & hold CAGR", pct(m.benchmark.cagr), signed(m.benchmark.cagr)),
-    card("Strategy Sharpe", m.sharpe, "neu"),
-    card("B&H Sharpe", m.benchmark.sharpe, "neu"),
-    card("Max drawdown", pct(m.max_drawdown), "neg"),
-    card("Time in market", pct(m.time_in_market), "neu"),
-  ].join("");
-  plot("ma-eq", [
-    { x: ma.dates, y: ma.equity_strategy, mode: "lines",
-      line: { color: "#3fb950", width: 1.8 }, name: "50/200 crossover" },
-    { x: ma.dates, y: ma.equity_bench, mode: "lines",
-      line: { color: "#8b98a9", width: 1.4 }, name: "buy & hold" },
-  ], { ...LAYOUT, title: { text: "SPY: strategy vs benchmark, log scale" },
-       yaxis: { title: "value ($)", type: "log" } });
-  plot("ma-dd", [
-    { x: ma.dates, y: ma.dd_strategy, mode: "lines", fill: "tozeroy",
-      line: { color: "#3fb950", width: 1 }, name: "strategy" },
-    { x: ma.dates, y: ma.dd_bench, mode: "lines", fill: "tozeroy",
-      line: { color: "#8b98a9", width: 1 }, name: "buy & hold" },
-  ], { ...LAYOUT, title: { text: "drawdown from peak" },
-       yaxis: { tickformat: ".0%" } });
-})().catch(e => {
-  document.querySelectorAll(".chart").forEach(
-    el => el.innerHTML = '<div class="loading">failed to load data</div>');
-  console.error(e);
-});
-</script>
-</body>
-</html>
+<script src="audit.js"></script>
+</body></html>
