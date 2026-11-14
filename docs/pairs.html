@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pairs trading, backtested honestly - quant-lab</title>
+<meta name="description" content="Ten obvious stock pairs, cointegration tests on five years of data, then five more years of out-of-sample trading with real costs. Most of them fail.">
+<meta name="referrer" content="no-referrer">
+<link rel="canonical" href="https://aditya2375.github.io/quant-lab/pairs.html">
+<meta property="og:title" content="Pairs trading, backtested honestly - quant-lab">
+<meta property="og:description" content="Ten obvious pairs, cointegration tested, then traded out-of-sample with costs. Most fail. The survivors say something honest.">
+<meta property="og:type" content="website">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand" href="index.html">quant<em>-lab</em></a>
+    <nav>
+      <a href="options.html">01 options</a>
+      <a href="pairs.html" class="on">02 pairs</a>
+      <a href="vol.html">03 volatility</a>
+      <a href="https://github.com/Aditya2375/quant-lab">source</a>
+    </nav>
+  </div>
+
+  <header class="masthead">
+    <div class="kicker">Study 02 &middot; Market neutral</div>
+    <h1>The classic market-neutral strategy, <em>backtested like it could lose.</em></h1>
+    <p class="lede">Pairs trading: find two stocks that move together, bet on the gap closing
+      when they drift apart. Every tutorial says it works. This study takes the ten most
+      obvious pairs in the US market, tests each one for cointegration on five years of data,
+      then trades it for the next five years with frozen parameters and real transaction
+      costs. Most of them fail. The failures are the finding.</p>
+  </header>
+
+  <section class="block" id="verdict">
+    <div class="sec-head"><span class="num">01</span><h2>The verdict, up front</h2></div>
+    <div class="cards" id="verdictCards">
+      <div class="card"><div class="k">Pairs tested</div><div class="v neu">10</div><div class="s">the most obvious in the US market</div></div>
+      <div class="card"><div class="k">Cointegrated at 5%</div><div class="v neu">4</div><div class="s">ADF on 5y formation spread</div></div>
+      <div class="card"><div class="k">Median out-of-sample Sharpe</div><div class="v" id="cardMedian">-</div><div class="s">all 10 pairs, with costs</div></div>
+      <div class="card"><div class="k">Survivor</div><div class="v" id="cardSurvivor">HD/LOW</div><div class="s" id="cardSurvivorSub"></div></div>
+    </div>
+    <div class="note"><b>Read this first.</b> In-sample, eight of ten pairs show a Sharpe between
+      0.7 and 1.1. That is the number a backtest tutorial would report. Out-of-sample, with the
+      hedge ratio and entry bands frozen at the 2021 boundary and never touched again, the median
+      pair makes about nothing and four lose money. One pair survives both windows. One pair
+      makes money with no statistical right to. Both facts are reported below, along with the
+      catch: even the survivor trades only three times in five years.</div>
+    <div class="chart"><img src="assets/in_vs_out.png" alt="In-sample vs out-of-sample Sharpe for all ten pairs" style="width:100%;border-radius:8px"></div>
+  </section>
+
+  <section class="block" id="scoreboard">
+    <div class="sec-head"><span class="num">02</span><h2>All ten pairs, no cherry-picking</h2></div>
+    <p class="desc">Formation: <span id="formWindow"></span>. Trading: <span id="tradeWindow"></span>.
+      ADF is the augmented Dickey-Fuller t-statistic on the formation-period log spread
+      (more negative means stronger mean-reversion evidence; -2.86 is the 5% line).
+      Half-life is the OU estimate in trading days. Click a row for the honest one-liner.</p>
+    <table class="data">
+      <thead><tr>
+        <th>Pair</th><th>ADF t</th><th>Half-life</th><th>In-sample Sharpe</th>
+        <th>Out Sharpe</th><th>Out return</th><th>Max DD</th><th>Trades</th>
+      </tr></thead>
+      <tbody id="pairTable"></tbody>
+    </table>
+    <div class="note" id="pairNote" style="margin-top:14px"></div>
+  </section>
+
+  <section class="block" id="detail">
+    <div class="sec-head"><span class="num">03</span><h2>The survivor under the microscope</h2></div>
+    <p class="desc">Home Depot vs Lowe's: same industry, same macro exposures, the cleanest
+      economic story in the set. Its spread mean-reverts with a 44-day half-life, and it is the
+      only pair whose out-of-sample Sharpe (<b id="hdSharpe"></b>) beats its in-sample one.
+      Top chart: the spread z-score with the frozen entry and exit bands. Bottom: equity with
+      and without costs. Hover for values.</p>
+    <div class="chart" id="zChart"></div>
+    <div class="chart" id="eqChart"></div>
+    <p class="desc" style="margin-top:18px">Robustness: the result does not depend on the exact
+      entry band or the cost assumption. It does depend on very few trades - three closed
+      round trips in five years - so treat the Sharpe as "encouraging", not "proven".</p>
+    <table class="data">
+      <thead><tr><th>Entry |z|</th><th>Cost per side</th><th>Trades</th><th>Return</th><th>Sharpe</th></tr></thead>
+      <tbody id="sensTable"></tbody>
+    </table>
+  </section>
+
+  <section class="block" id="honest">
+    <div class="sec-head"><span class="num">04</span><h2>How the others failed</h2></div>
+    <div class="note"><b>Three failure modes, all measured.</b><br><br>
+      <b>1. Worked in the fit window, died after.</b> Visa/Mastercard has the strongest
+      cointegration evidence of the ten and a 19-day half-life - and an out-of-sample Sharpe of
+      0.07. The relationship that made it attractive was already arbitraged away by the time the
+      test started.<br><br>
+      <b>2. Broke structurally.</b> Coke/Pepsi, the textbook example, decoupled: one trade opened
+      in 2022 and never came back, -27%. Mean reversion is a property of a regime, and regimes
+      end.<br><br>
+      <b>3. Made money by luck.</b> UPS/FedEx shows no cointegration at all (ADF t = -0.58, a
+      random walk spread) yet returned +23.6% on two trades. Reporting it next to the losses is
+      what keeps the study honest: with ten pairs and a handful of trades each, some results in
+      both directions are noise.</div>
+    <div class="note green"><b>What I would tell someone citing this.</b> The machinery
+      (cointegration testing, frozen parameters, next-close fills, costs on every position
+      change, an entry-band and cost sensitivity grid) is the real deliverable. The headline
+      "HD/LOW Sharpe 0.86" rests on three trades and would need a rolling-refit variant and
+      intraday data before anyone should size into it. This is a measurement of a strategy,
+      not a recommendation.</div>
+  </section>
+
+  <footer>
+    <div>Data: 10 years of daily bars for 20 tickers via yfinance, pinned with sha256 hashes in
+      <code>data/manifest.json</code>. Backtester: pure standard library, ADF cross-checked
+      against statsmodels. Not investment advice.</div>
+    <div><a href="https://github.com/Aditya2375/quant-lab/tree/main/pairs-backtester">study source</a> &middot; <a href="index.html">all studies</a></div>
+  </footer>
+</div>
+<script src="assets/charts.js"></script>
+<script src="assets/pairs.js"></script>
+</body>
+</html>
