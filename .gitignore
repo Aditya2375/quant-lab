@@ -1,4 +1,4 @@
-/data/
+# data/ is now the pinned dataset - commit it
 __pycache__/
 *.pyc
 .DS_Store

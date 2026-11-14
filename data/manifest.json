@@ -1,0 +1,182 @@
+{
+  "source": "yfinance (Yahoo Finance daily bars, auto_adjust=True)",
+  "fetched_at_utc": "2026-11-14T04:03:50+00:00",
+  "series": {
+    "SPY": {
+      "rows": 8507,
+      "first": "1993-01-29",
+      "last": "2026-11-13",
+      "period_requested": "max",
+      "sha256": "0477a0ac4225259b68befef2865228d91ee78320f93539742e67134eb3874d83",
+      "file": "data/raw/SPY.csv"
+    },
+    "V": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "e4e41c9a79bc4525e34748976e35e44547b30b455e323c3fc063c6b8a0f031af",
+      "file": "data/raw/V.csv"
+    },
+    "MA": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "65e1a1782889c31ea51a3d5cfb69cc75ee58509a4cb618757011d6e482fa7f7f",
+      "file": "data/raw/MA.csv"
+    },
+    "KO": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "ff50560a8cfff593253d4efbd986b76087610da807aa80583bcec59721cdcab6",
+      "file": "data/raw/KO.csv"
+    },
+    "PEP": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "ca683c5266c09c9ffcfe5bd07f49293c1001e6823519772d3de0dfba108409a5",
+      "file": "data/raw/PEP.csv"
+    },
+    "XOM": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "2850b50abec9b498ce37c8a6fb6780f7038def5f7d081d3066743d7b4d0d90c2",
+      "file": "data/raw/XOM.csv"
+    },
+    "CVX": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "3d1d30bcadb5d4af25f2c0c7e103ec235b982eaa9d9a7795373797b1bb1dc3b0",
+      "file": "data/raw/CVX.csv"
+    },
+    "JPM": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "ba0223f5e6454352e00471749b80e41cd96349f7d4cdd0a019307d3b657b5d38",
+      "file": "data/raw/JPM.csv"
+    },
+    "BAC": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "75262f82795171bd1209018f4ae9d5c582ee8e4b360c8cf118f66c4d035c5d1f",
+      "file": "data/raw/BAC.csv"
+    },
+    "HD": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "17cbf2ecd1fdde967854c14da18d34a9053d0c0d40d6f2458a6d533d5da52756",
+      "file": "data/raw/HD.csv"
+    },
+    "LOW": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "f1e6e257ec478feb090f746f8e7cda3305cb878a3c4d5b9d5975e53d24f0926e",
+      "file": "data/raw/LOW.csv"
+    },
+    "MS": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "ef1406b6ebeb8049364d1a0525c9392393c75d1e3be3d1de159902392a59b811",
+      "file": "data/raw/MS.csv"
+    },
+    "GS": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "751a241a4cfb883986cc2b55928dcd99cbdcce66168976b116a144750d75b7d1",
+      "file": "data/raw/GS.csv"
+    },
+    "UPS": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "77ac6358812e06c0fcc4106c028ca9432439cda8c8d74b2c3fd90b0c0a64b1e3",
+      "file": "data/raw/UPS.csv"
+    },
+    "FDX": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "665b34859638c5055ef31a3838721b0842d54884f2a6f69d10c57741ceaa73bb",
+      "file": "data/raw/FDX.csv"
+    },
+    "NEE": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "f789cefa4ec6a17f09ec41442b917f96ce71f9af71347597e983fb27169ed7c9",
+      "file": "data/raw/NEE.csv"
+    },
+    "SO": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "5caa1e5a261387193623bf93b0848a1ee1daa26888b5120f62ce48ee5f6b6289",
+      "file": "data/raw/SO.csv"
+    },
+    "PG": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "b49a210288a0737e2b671f756c28b4e656b3d55f32907ff243afd2e4860a4311",
+      "file": "data/raw/PG.csv"
+    },
+    "KMB": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "76472b185dd416bc005ecb7832c99ce6f7cb707fccbb2f68165a0771247d3139",
+      "file": "data/raw/KMB.csv"
+    },
+    "LIN": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "e0a84e7fea470ad378714518ba861561889783cdc9156a6c198ce96c7b539843",
+      "file": "data/raw/LIN.csv"
+    },
+    "APD": {
+      "rows": 2514,
+      "first": "2016-11-14",
+      "last": "2026-11-13",
+      "period_requested": "10y",
+      "sha256": "ecdb0877382e23f3301d43b18f10ea467877f02db8ccc317067797e03b1d56d5",
+      "file": "data/raw/APD.csv"
+    },
+    "SPY-options-2026-12-11-calls": {
+      "rows": 89,
+      "first": "2026-11-13 snapshot",
+      "last": "expiry 2026-12-11",
+      "period_requested": "option_chain(2026-12-11)",
+      "sha256": "6a4e26f7a18fd5170df3ed3958e79efc4c1975e532a50e415f23b8dff0de094c",
+      "file": "data/raw/SPY-options-2026-12-11-calls.csv"
+    }
+  }
+}
