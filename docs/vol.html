@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Volatility: GARCH vs machine learning - quant-lab</title>
+<meta name="description" content="GARCH(1,1) fitted by own maximum likelihood against gradient boosting on the same 33 years of SPY data, scored out-of-sample on QLIKE with a Diebold-Mariano test. GARCH wins, and the page explains why.">
+<meta name="referrer" content="no-referrer">
+<link rel="canonical" href="https://aditya2375.github.io/quant-lab/vol.html">
+<meta property="og:title" content="Volatility: GARCH vs machine learning - quant-lab">
+<meta property="og:description" content="A 1986 model with three parameters beats gradient boosting at forecasting volatility. Scored honestly over 14 years out-of-sample.">
+<meta property="og:type" content="website">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand" href="index.html">quant<em>-lab</em></a>
+    <nav>
+      <a href="options.html">01 options</a>
+      <a href="pairs.html">02 pairs</a>
+      <a href="vol.html" class="on">03 volatility</a>
+      <a href="https://github.com/Aditya2375/quant-lab">source</a>
+    </nav>
+  </div>
+
+  <header class="masthead">
+    <div class="kicker">Study 03 &middot; Forecasting</div>
+    <h1>A 1986 model with three parameters <em>beats the machine.</em></h1>
+    <p class="lede">The task: forecast tomorrow's S&amp;P 500 volatility. In one corner,
+      GARCH(1,1) - three parameters, fitted by maximum likelihood with a variance recursion
+      written here from scratch. In the other, gradient-boosted trees with twelve engineered
+      features. Both walk forward through 14 years of market they have never seen, refitting
+      once a year on the past only. Scored on QLIKE, the loss function the volatility
+      literature trusts. The old model wins, and it is not close.</p>
+  </header>
+
+  <section class="block" id="fact">
+    <div class="sec-head"><span class="num">01</span><h2>Why volatility is forecastable at all</h2></div>
+    <p class="desc">Returns themselves are nearly unpredictable. Their <i>magnitude</i> is not:
+      big moves follow big moves. Thirty-three years of SPY, pinned in this repo, show calm
+      decades punctuated by storms (2000, 2008, 2020, 2025). Any model that tracks the current
+      cluster level already captures most of what is predictable. The question is whether ML
+      finds something <b>beyond</b> that.</p>
+    <div class="chart"><img src="assets/vol_clusters.png" alt="33 years of SPY absolute returns showing volatility clustering" style="width:100%;border-radius:8px"></div>
+  </section>
+
+  <section class="block" id="scoreboard">
+    <div class="sec-head"><span class="num">02</span><h2>The scoreboard, 14 years out-of-sample</h2></div>
+    <p class="desc">Every number below is out-of-sample: <span id="wfWindow"></span>,
+      <span id="wfDays"></span> forecast days, both models refit yearly on expanding windows of
+      past data only. Lower QLIKE is better; it is the loss that stays honest even though the
+      "true" volatility is never observed, only proxied.</p>
+    <table class="data">
+      <thead><tr><th>Model</th><th>QLIKE</th><th>MSE</th><th>corr with realized (log)</th><th>Verdict</th></tr></thead>
+      <tbody id="scoreTable"></tbody>
+    </table>
+    <div class="note"><b>Is the gap real?</b> The Diebold-Mariano test on the daily loss
+      differential says yes: DM statistic <b id="dmStat"></b>, p &lt; 0.001. GARCH's advantage
+      over gradient boosting is statistically significant over the full window. The rolling
+      one-year difference below almost never crosses zero - and when it approaches it, that is
+      usually a quiet regime where any smooth forecast does fine.</div>
+    <div class="chart"><img src="assets/vol_rolling.png" alt="Rolling one-year QLIKE difference between GARCH and ML" style="width:100%;border-radius:8px"></div>
+  </section>
+
+  <section class="block" id="crisis">
+    <div class="sec-head"><span class="num">03</span><h2>Where the difference shows: 2020</h2></div>
+    <p class="desc">COVID took SPY volatility from 10% to 180% annualized in weeks. GARCH's
+      recursion responds to a shock with exactly the persistence its parameters imply and
+      glides back down smoothly. The boosted trees chase every wiggle of the noisy realized
+      proxy, overshooting on the way up and twitching on the way down. The trees are fitting
+      the proxy's noise; GARCH's tiny parameterization <i>can't</i> - and that constraint is
+      precisely its edge.</p>
+    <div class="chart"><img src="assets/vol_crisis.png" alt="2020 volatility forecasts: GARCH vs gradient boosting vs realized" style="width:100%;border-radius:8px"></div>
+  </section>
+
+  <section class="block" id="why">
+    <div class="sec-head"><span class="num">04</span><h2>Why GARCH is hard to beat</h2></div>
+    <div class="note"><b>Three reasons, all visible in this study.</b><br><br>
+      <b>1. The signal is genuinely simple.</b> Tomorrow's variance is overwhelmingly "today's
+      variance, plus a kick if today was wild." GARCH's two shape parameters encode exactly
+      that. Twelve ML features mostly re-derive the same number, and the trees' extra freedom
+      buys noise, not signal.<br><br>
+      <b>2. The target is a proxy, and proxies punish flexible models.</b> We never observe
+      true volatility - only a noisy estimate of it. A flexible model fits the noise; a
+      constrained one averages through it. Note the MSE column: ML edges out GARCH there while
+      losing badly on QLIKE, which is designed to be robust to proxy noise. Which loss you
+      trust decides the "winner" - QLIKE is the one the literature settled on.<br><br>
+      <b>3. Three parameters cannot overfit 8,500 days.</b> Refit GARCH every year for 14 years
+      and the parameters barely move (below). The ML model refits a fresh forest each year;
+      its advantage in flexibility never gets enough stable signal to pay for its variance.</div>
+    <div class="chart"><img src="assets/vol_params.png" alt="GARCH parameter stability across 13 yearly refits" style="width:100%;border-radius:8px"></div>
+    <div class="note green"><b>The honest caveats.</b> This is one asset (SPY), one frequency
+      (daily), one ML family (boosted trees, fixed hyperparameters, no tuning on the test
+      window), one horizon (one day). ML earns its keep at higher frequencies, with
+      cross-asset features, or on intraday realized measures - none of which the free data
+      here can test fairly. Also shown in the scoreboard: a humble 21-day rolling variance
+      lands close to GARCH. The real finding is not "GARCH magic" but that at daily frequency,
+      volatility is a low-dimensional problem - and low-dimensional problems reward
+      low-dimensional models.</div>
+  </section>
+
+  <footer>
+    <div>Data: SPY daily bars 1993-2026 via yfinance, pinned with sha256 in
+      <code>data/manifest.json</code>. GARCH: own MLE implementation. ML: scikit-learn
+      HistGradientBoostingRegressor with Duan smearing correction. Not investment advice.</div>
+    <div><a href="https://github.com/Aditya2375/quant-lab/tree/main/vol-forecaster">study source</a> &middot; <a href="index.html">all studies</a></div>
+  </footer>
+</div>
+<script src="assets/charts.js"></script>
+<script src="assets/vol.js"></script>
+</body>
+</html>

@@ -66,18 +66,19 @@
         <div><b>1</b>survivor, caveats stated</div>
       </div>
     </a>
-    <div class="study" style="opacity:.55;cursor:default">
-      <span class="tag">in the lab</span>
+    <a class="study" href="vol.html">
+      <span class="tag">live</span>
       <div class="num">03 / forecasting</div>
       <h3>Volatility: GARCH vs machine learning</h3>
-      <p>GARCH(1,1) fitted by maximum likelihood against an ML model on the same SPY history,
-        scored out-of-sample on what they actually predict, with a straight answer on why GARCH
-        is hard to beat.</p>
+      <p>GARCH(1,1) fitted by own maximum likelihood against gradient boosting on the same 33
+        years of SPY, walked forward through 14 years of unseen market and scored on QLIKE.
+        The 1986 model wins, and the page explains why.</p>
       <div class="stat">
-        <div><b>33y</b>of SPY, pinned</div>
-        <div><b>QLIKE</b>the honest loss</div>
+        <div><b>14y</b>out-of-sample, yearly refits</div>
+        <div><b>QLIKE</b>the robust loss</div>
+        <div><b>p&lt;0.001</b>Diebold-Mariano</div>
       </div>
-    </div>
+    </a>
   </div>
 
   <section class="block">

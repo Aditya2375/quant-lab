@@ -8,8 +8,8 @@ fixed seeds, and a test suite that fails if a published number stops matching it
 | # | study | question it answers | live demo |
 |---|-------|---------------------|-----------|
 | 01 | `options-pricer/` | Does Monte Carlo actually converge to Black-Scholes, how fast, and where does the model itself break? | [options.html](https://aditya2375.github.io/quant-lab/options.html) |
-| 02 | `pairs-trading/` | Can a cointegration spread strategy survive honest out-of-sample testing with transaction costs? | in build |
-| 03 | `vol-forecaster/` | Can machine learning beat GARCH(1,1) at forecasting realized volatility? | in build |
+| 02 | `pairs-backtester/` | Can a cointegration spread strategy survive honest out-of-sample testing with transaction costs? | [pairs.html](https://aditya2375.github.io/quant-lab/pairs.html) |
+| 03 | `vol-forecaster/` | Can machine learning beat GARCH(1,1) at forecasting realized volatility? | [vol.html](https://aditya2375.github.io/quant-lab/vol.html) |
 
 ## The rules every study follows
 
