@@ -1,0 +1,35 @@
+name: tests
+on: [push, pull_request]
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -r requirements.txt
+      - run: python3 -m unittest discover -s tests
+  js-engine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: node tests/test_engine_js.mjs
+  data-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: verify pinned data hashes
+        run: python3 - <<'PY'
+          import json, hashlib, sys
+          m = json.load(open('data/manifest.json'))
+          bad = []
+          for name, meta in m['series'].items():
+              h = hashlib.sha256(open(meta['file'], 'rb').read()).hexdigest()
+              if h != meta['sha256']:
+                  bad.append(name)
+          if bad:
+              print('hash mismatch:', ', '.join(bad)); sys.exit(1)
+          print(f"{len(m['series'])} pinned series verified")
+        PY

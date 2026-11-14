@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Options, proven two ways - quant-lab</title>
+<meta name="description" content="Black-Scholes closed form checked against Monte Carlo, variance reduction and quasi-Monte Carlo, cross-checked against a pinned real SPY option chain.">
+<meta name="referrer" content="no-referrer">
+<link rel="canonical" href="https://aditya2375.github.io/quant-lab/options.html">
+<meta property="og:title" content="Options, proven two ways - quant-lab">
+<meta property="og:description" content="Black-Scholes vs Monte Carlo vs QMC, converging live in your browser, checked against a real SPY chain.">
+<meta property="og:type" content="website">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand" href="index.html">quant<em>-lab</em></a>
+    <nav>
+      <a href="options.html" class="on">01 options</a>
+      <a href="pairs.html">02 pairs</a>
+      <a href="vol.html">03 volatility</a>
+      <a href="https://github.com/Aditya2375/quant-lab">source</a>
+    </nav>
+  </div>
+
+  <header class="masthead">
+    <div class="kicker">Study 01 &middot; Derivatives pricing</div>
+    <h1>One option, priced <em>four ways</em>, each checking the others.</h1>
+    <p class="lede">Black-Scholes gives the exact answer in one line. Monte Carlo estimates it
+      from random paths. Variance reduction and quasi-random sequences make the estimate
+      converge faster. Below, all four run on the same contract, the error shrinks on a log
+      scale as paths grow, and the whole thing is then held up against a real SPY option
+      chain to see where the model itself breaks.</p>
+  </header>
+
+  <section class="block" id="lab">
+    <div class="sec-head"><span class="num">01</span><h2>The lab: run it yourself</h2></div>
+    <p class="desc">Every number below is computed <b>in your browser, right now</b>, by the same
+      engine that the repo's test suite pins against the closed form to 13 decimal places.
+      Move the inputs and the closed form reprices instantly; press run and watch three
+      Monte Carlo estimators race toward it.</p>
+    <div class="lab">
+      <div class="controls">
+        <label>Spot <output id="inSOut"></output></label>
+        <input type="range" id="inS">
+        <label>Strike <output id="inKOut"></output></label>
+        <input type="range" id="inK">
+        <label>Time to expiry <output id="inTOut"></output></label>
+        <input type="range" id="inT">
+        <label>Volatility &sigma; <output id="inSigmaOut"></output></label>
+        <input type="range" id="inSigma">
+        <label>Risk-free rate <output id="inROut"></output></label>
+        <input type="range" id="inR">
+        <label>Dividend yield <output id="inQOut"></output></label>
+        <input type="range" id="inQ">
+        <label>Type</label>
+        <div class="seg"><button id="kindCall" class="on">call</button><button id="kindPut">put</button></div>
+        <label>Estimators</label>
+        <div style="font-size:.85rem;color:var(--muted)">
+          <label style="margin:2px 0"><input type="checkbox" id="usePlain" checked> plain Monte Carlo</label>
+          <label style="margin:2px 0"><input type="checkbox" id="useAV" checked> antithetic + control variate</label>
+          <label style="margin:2px 0"><input type="checkbox" id="useQMC" checked> Sobol QMC</label>
+        </div>
+        <button class="run" id="runBtn">run the study</button>
+        <div class="progress"><i id="runBar"></i></div>
+        <div class="s" id="runTime" style="font-family:var(--mono);font-size:.76rem;color:var(--faint);margin-top:6px"></div>
+      </div>
+      <div>
+        <div class="cards">
+          <div class="card"><div class="k">Closed form</div><div class="v neu" id="bsPrice"></div><div class="s">Black-Scholes, exact</div></div>
+          <div class="card"><div class="k">Best MC estimate</div><div class="v" id="mcEst">-</div><div class="s">runs live when you press run</div></div>
+          <div class="card"><div class="k">Parity residual</div><div class="v neu" id="parity"></div><div class="s">should be ~1e-15</div></div>
+        </div>
+        <div class="cards">
+          <div class="card"><div class="k">Delta</div><div class="v" id="gDelta"></div></div>
+          <div class="card"><div class="k">Gamma</div><div class="v" id="gGamma"></div></div>
+          <div class="card"><div class="k">Vega</div><div class="v" id="gVega"></div></div>
+          <div class="card"><div class="k">Theta / day</div><div class="v" id="gTheta"></div></div>
+          <div class="card"><div class="k">Rho</div><div class="v" id="gRho"></div></div>
+        </div>
+        <div class="chart" id="liveConv"></div>
+        <div class="chart" id="liveEst"></div>
+      </div>
+    </div>
+    <div class="note"><b>Reading the race.</b> Top chart: absolute error vs the closed form on
+      log scales - every estimator should fall as paths grow. Bottom chart: the estimate itself
+      homing in on the orange closed-form line. Plain Monte Carlo falls like 1/&radic;N, as the
+      central limit theorem says it must. QMC falls almost like 1/N because the integrand is
+      one-dimensional and smooth. That gap, three orders of magnitude at a million paths, is
+      the entire point of the study.</div>
+  </section>
+
+  <section class="block" id="pinned">
+    <div class="sec-head"><span class="num">02</span><h2>The pinned study</h2></div>
+    <p class="desc" id="pinnedIntro"></p>
+    <div class="cards">
+      <div class="card"><div class="k">Closed form</div><div class="v neu" id="pinBS"></div></div>
+      <div class="card"><div class="k">Monte Carlo, 2<sup>20</sup> paths</div><div class="v" id="pinMC"></div><div class="s" id="pinMCErr"></div></div>
+      <div class="card"><div class="k">Parity residual</div><div class="v neu" id="pinParity"></div><div class="s">machine zero</div></div>
+      <div class="card"><div class="k">Implied-vol round trip</div><div class="v neu" id="pinIV"></div><div class="s">solver error</div></div>
+    </div>
+    <div class="chart" id="pinConv"></div>
+    <div class="note green"><b>What the study proves.</b> Both methods price the same contract and
+      they converge to each other, with the error shrinking exactly the way the theory for each
+      estimator predicts. The shaded bands are the worst of 8 independent seeds - honest spread,
+      not a lucky run. Every point is computed from a fixed seed and the JSON is committed to the
+      repo, so this chart is reproducible byte-for-byte.</div>
+  </section>
+
+  <section class="block" id="market">
+    <div class="sec-head"><span class="num">03</span><h2>Held against the real market</h2></div>
+    <p class="desc">Black-Scholes assumes one flat volatility for every strike. The market
+      disagrees. Inverting the same formula on a pinned snapshot of 89 liquid SPY calls gives
+      the <b>volatility skew</b>: downside protection trades at a much higher implied vol than
+      at-the-money options. The formula still inverts cleanly - my solver's implied vols match
+      the provider's to a median of 0.69 vol points - but no single &sigma; prices the chain.</p>
+    <div class="chart" id="pinSkew"></div>
+    <table class="data">
+      <thead><tr><th>Strike</th><th>Moneyness</th><th>Market mid</th><th>Flat-&sigma; price</th><th>Flat - mid</th><th>My IV</th></tr></thead>
+      <tbody id="skewTable"></tbody>
+    </table>
+    <p class="desc" style="font-size:.85rem" id="skewNote"></p>
+    <div class="note"><b>Why this matters.</b> The left side of that curve is the market paying
+      up for crash insurance - a smile Black-Scholes says should not exist. It exists because
+      real returns have fat tails and volatility that clusters and jumps, which is exactly what
+      <a href="vol.html">study 03</a> tries to forecast. The pricer is right about its own math;
+      the model underneath is what the market is arguing with.</div>
+  </section>
+
+  <footer>
+    <div>Data: SPY daily bars and a pinned option-chain snapshot via yfinance, committed with
+      sha256 hashes in <code>data/manifest.json</code>. Not investment advice.</div>
+    <div><a href="https://github.com/Aditya2375/quant-lab/tree/main/options-pricer">study source</a> &middot; <a href="index.html">all studies</a></div>
+  </footer>
+</div>
+<script src="assets/charts.js"></script>
+<script src="assets/engine.js"></script>
+<script src="assets/options.js"></script>
+</body>
+</html>

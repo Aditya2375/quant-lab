@@ -3,122 +3,99 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>quant-lab - three quant finance projects, simulated and backtested</title>
-
-<style>
-  :root {
-    --bg: #0b0f14; --panel: #11171f; --border: #1f2a37; --text: #e6edf3;
-    --muted: #8b98a9; --blue: #58a6ff; --green: #3fb950; --orange: #d29922;
-    --red: #f85149; --purple: #bc8cff;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text);
-         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-         line-height: 1.55; }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px 80px; }
-  header { padding: 64px 0 32px; border-bottom: 1px solid var(--border); }
-  header h1 { font-size: 2.4rem; letter-spacing: -0.5px; }
-  header h1 span { color: var(--blue); }
-  header p { color: var(--muted); margin-top: 10px; max-width: 720px; font-size: 1.05rem; }
-  header .links { margin-top: 18px; display: flex; gap: 12px; flex-wrap: wrap; }
-  .btn { border: 1px solid var(--border); background: var(--panel); color: var(--text);
-         padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 0.92rem; }
-  .btn:hover { border-color: var(--blue); }
-  section { margin-top: 56px; }
-  .sec-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-  .sec-head .num { font-size: 0.9rem; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .sec-head h2 { font-size: 1.5rem; }
-  .sec-head .tag { font-size: 0.78rem; padding: 3px 10px; border-radius: 20px;
-                   border: 1px solid var(--border); color: var(--muted); }
-  .desc { color: var(--muted); margin: 12px 0 20px; max-width: 780px; }
-  .desc code { background: var(--panel); padding: 1px 6px; border-radius: 5px;
-               font-size: 0.85em; color: var(--text); }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-           gap: 12px; margin-bottom: 20px; }
-  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-          padding: 14px 16px; }
-  .card .k { font-size: 0.75rem; color: var(--muted); text-transform: uppercase;
-             letter-spacing: 0.6px; }
-  .card .v { font-size: 1.35rem; font-weight: 650; margin-top: 4px;
-             font-variant-numeric: tabular-nums; }
-  .card .v.pos { color: var(--green); } .card .v.neg { color: var(--red); }
-  .card .v.neu { color: var(--blue); }
-  .chart { background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
-           padding: 10px; margin-bottom: 16px; height: 440px; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media (max-width: 820px) { .grid2 { grid-template-columns: 1fr; } }
-  .note { border-left: 3px solid var(--orange); background: var(--panel);
-          padding: 14px 18px; border-radius: 0 10px 10px 0; color: var(--muted);
-          margin-top: 24px; font-size: 0.95rem; }
-  .note b { color: var(--text); }
-  footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border);
-           color: var(--muted); font-size: 0.9rem; }
-  footer a { color: var(--blue); text-decoration: none; }
-  .loading { color: var(--muted); padding: 40px; text-align: center; }
-:focus-visible{outline:3px solid var(--blue);outline-offset:3px}.chart{height:auto;min-height:120px} .chart p{padding:24px;color:var(--muted)}@media(max-width:500px){header{padding-top:32px}.wrap{padding-left:16px;padding-right:16px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
-</style>
-<meta name="description" content="Educational quant-finance methods. Historical outputs withdrawn pending corrected market-data reruns."><meta name="referrer" content="no-referrer"><link rel="canonical" href="https://aditya2375.github.io/quant-lab/"><meta property="og:title" content="Quant-lab / Methods under review"><meta property="og:description" content="Corrected code, synthetic regression tests, historical outputs withdrawn."><meta property="og:type" content="website"><meta property="og:url" content="https://aditya2375.github.io/quant-lab/"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>quant-lab - market studies with every number reproducible</title>
+<meta name="description" content="Three quant finance studies: options priced four ways, a pairs-trading backtester with honest costs, and a volatility forecasting bake-off. Pinned data, fixed seeds, live demos.">
+<meta name="referrer" content="no-referrer">
+<link rel="canonical" href="https://aditya2375.github.io/quant-lab/">
+<meta property="og:title" content="quant-lab">
+<meta property="og:description" content="Options pricer, pairs backtester, volatility forecaster. Real pinned data, honest accounting, live demos.">
+<meta property="og:type" content="website">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <h1>quant<span>-lab</span></h1>
-    <p>Three core quant-finance techniques, implemented from scratch in Python and
-       originally run on historical market data, with old outputs withdrawn pending a corrected rerun: Monte Carlo portfolio risk, cointegration-based
-       pairs trading, and a moving-average crossover backtest with honest
-       accounting for lookahead bias and transaction costs.</p>
+  <div class="topnav">
+    <a class="brand" href="index.html">quant<em>-lab</em></a>
+    <nav>
+      <a href="options.html">01 options</a>
+      <a href="pairs.html">02 pairs</a>
+      <a href="vol.html">03 volatility</a>
+      <a href="https://github.com/Aditya2375/quant-lab">source</a>
+    </nav>
+  </div>
+
+  <header class="masthead">
+    <div class="kicker">Aditya Kulkarni &middot; numerical finance</div>
+    <h1>Market studies where every number can be <em>recomputed, checked and challenged</em>.</h1>
+    <p class="lede">Each study below runs on real market data that is pinned into the repo with
+      sha256 hashes, on fixed seeds, with the method's limits stated next to its results. The
+      demos run the actual engines in your browser. Nothing here is investment advice - the
+      point is the machinery and how honestly it is measured.</p>
     <div class="links">
-      <a class="btn" href="https://github.com/Aditya2375/quant-lab">Source on GitHub</a>
-      <a class="btn" href="https://github.com/Aditya2375/quant-lab/tree/main/monte-carlo-risk">1 · Monte Carlo risk</a>
-      <a class="btn" href="https://github.com/Aditya2375/quant-lab/tree/main/pairs-trading">2 · Pairs trading</a>
-      <a class="btn" href="https://github.com/Aditya2375/quant-lab/tree/main/ma-crossover">3 · MA crossover</a>
+      <a class="btn primary" href="options.html">open study 01</a>
+      <a class="btn" href="https://github.com/Aditya2375/quant-lab">source on GitHub</a>
+      <a class="btn" href="https://github.com/Aditya2375/quant-lab/blob/main/data/manifest.json">data manifest</a>
     </div>
-  <div class="note"><b>Historical results withdrawn.</b> Numerical-method issues were found in the Monte Carlo drift, pairs spread/accounting and initial-peak drawdown. Corrected code passes synthetic regression tests, but the original market inputs are not archived here. No replacement market performance is claimed. Educational only, not investment advice.</div></header>
+  </header>
 
-  <section id="mc">
-    <div class="sec-head"><span class="num">01</span><h2>Monte Carlo portfolio risk</h2>
-      <span class="tag">simulation</span></div>
-    <p class="desc">An equal-weight portfolio of <code id="mc-tickers"></code>, using estimated log-return drift and covariance. Corrected simulated results have not been republished. In a simulation, <b>VaR 95%</b> is the loss only 5% of outcomes exceed, and
-      <b>expected shortfall</b> is the average of that worst 5%.</p>
-    <div class="cards" id="mc-cards"></div>
-    <div class="grid2">
-      <div class="chart" id="mc-hist"><div class="loading">loading chart...</div></div>
-      <div class="chart" id="mc-cone"><div class="loading">loading chart...</div></div>
+  <div class="studies">
+    <a class="study" href="options.html">
+      <span class="tag">live</span>
+      <div class="num">01 / derivatives</div>
+      <h3>Options, proven two ways</h3>
+      <p>Black-Scholes closed form vs Monte Carlo, antithetic + control variates and Sobol QMC.
+        Error shrinking on a log scale, live in the browser, then held against a real SPY chain's
+        volatility skew.</p>
+      <div class="stat">
+        <div><b>1e-13</b>engine vs closed form</div>
+        <div><b>2^20</b>paths in the headline run</div>
+        <div><b>89</b>real strikes cross-checked</div>
+      </div>
+    </a>
+    <div class="study" style="opacity:.55;cursor:default">
+      <span class="tag">in the lab</span>
+      <div class="num">02 / market neutral</div>
+      <h3>Pairs trading, backtested honestly</h3>
+      <p>Cointegration screening over 10 candidate pairs, walk-forward out-of-sample trading of
+        the spread, transaction costs charged on every leg, and the selection bias stated
+        instead of hidden.</p>
+      <div class="stat">
+        <div><b>10y</b>pinned daily data</div>
+        <div><b>walk-fwd</b>no lookahead</div>
+      </div>
     </div>
-    <div class="note"><b>Honest limits.</b> GBM assumes log-normal returns and a stable
-      correlation matrix. Real-market tails and correlations can differ from the model. Neither the old nor corrected model provides a guaranteed lower bound on risk.</div>
-  </section>
+    <div class="study" style="opacity:.55;cursor:default">
+      <span class="tag">in the lab</span>
+      <div class="num">03 / forecasting</div>
+      <h3>Volatility: GARCH vs machine learning</h3>
+      <p>GARCH(1,1) fitted by maximum likelihood against an ML model on the same SPY history,
+        scored out-of-sample on what they actually predict, with a straight answer on why GARCH
+        is hard to beat.</p>
+      <div class="stat">
+        <div><b>33y</b>of SPY, pinned</div>
+        <div><b>QLIKE</b>the honest loss</div>
+      </div>
+    </div>
+  </div>
 
-  <section id="pairs">
-    <div class="sec-head"><span class="num">02</span><h2>Pairs trading / statistical arbitrage</h2>
-      <span class="tag">cointegration</span></div>
-    <p class="desc">The earlier model fitted log prices but traded a level-price spread, so its published metrics are withdrawn. The corrected implementation tests log-price cointegration, uses a matching log spread, disjoint windows and gross-normalized illustrative returns. Failed screens stop the run. It still excludes borrowing, financing and execution frictions.</p>
-    <div class="cards" id="pt-cards"></div>
-    <div class="chart" id="pt-z"><div class="loading">loading chart...</div></div>
-    <div class="chart" id="pt-eq"><div class="loading">loading chart...</div></div>
-    <div class="note"><b>Honest limits.</b> Cointegration is a historical property, not a
-      law - relationships break when business models diverge. Results are also sensitive to
-      the entry threshold and lookback window.</div>
-  </section>
-
-  <section id="ma">
-    <div class="sec-head"><span class="num">03</span><h2>50/200 moving average crossover</h2>
-      <span class="tag">backtest</span></div>
-    <p class="desc">The golden-cross rule on <code>SPY</code> over 15 years: hold while the
-      50-day average is above the 200-day, otherwise sit in cash. Signals are delayed one day
-      to remove lookahead bias, every switch pays 10 bps, and the benchmark is plain
-      buy-and-hold. The earlier result is withdrawn until initial-peak drawdown and the full run are rechecked.</p>
-    <div class="cards" id="ma-cards"></div>
-    <div class="chart" id="ma-eq"><div class="loading">loading chart...</div></div>
-    <div class="chart" id="ma-dd"><div class="loading">loading chart...</div></div>
-    <div class="note"><b>Honest limits.</b> The rule spends most of its life in the market
-      and exits late in fast crashes, so it lags buy-and-hold in a long bull run. It is an educational baseline, not a recommendation.</div>
+  <section class="block">
+    <div class="sec-head"><span class="num">&para;</span><h2>Why "pinned" matters</h2></div>
+    <p class="desc">Most backtests you find online cannot be rerun: the data provider revises
+      prices, the seed is missing, the package versions drift. Every series used here lives in
+      <code>data/raw/</code> as a CSV, with its row count, date range and sha256 in
+      <code>data/manifest.json</code>. If a number on this site ever disagrees with the pinned
+      data, the test suite fails, not your trust. Earlier exploratory studies in this repo
+      (Monte Carlo portfolio risk, a moving-average baseline) had their metrics withdrawn when
+      an audit found method bugs - the corrected versions taught the rules these three studies
+      now follow: archive inputs, state costs, no lookahead, no silent selection.</p>
   </section>
 
   <footer>
-    Data: daily adjusted closes via yfinance. A fixed seed alone does not reproduce changing market data. Original price snapshots and environment locks were not archived. Existing JSON remains in the repo for provenance but is not a corrected result. <a href="https://github.com/Aditya2375/quant-lab">Aditya2375/quant-lab</a>
+    <div>Built by Aditya Kulkarni. Data: Yahoo Finance via yfinance (free), pinned
+      2026-11-13/14. Educational, not investment advice.</div>
+    <div><a href="https://github.com/Aditya2375/quant-lab">Aditya2375/quant-lab</a></div>
   </footer>
 </div>
-
-<script src="audit.js"></script>
-</body></html>
+</body>
+</html>

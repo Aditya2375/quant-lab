@@ -1,21 +1,47 @@
-# quant-lab / Numerical methods under review
+# quant-lab
 
 Live: https://aditya2375.github.io/quant-lab/
 
-Educational Python implementations of Monte Carlo risk, pairs trading and moving-average crossover. Not investment advice. Historical metrics and charts are withdrawn pending corrected market-data reruns. Old JSON/output artifacts remain for provenance, not current or validated performance.
+Three quantitative finance studies, each with a live interactive demo, pinned input data,
+fixed seeds, and a test suite that fails if a published number stops matching its inputs.
 
-## Corrections
+| # | study | question it answers | live demo |
+|---|-------|---------------------|-----------|
+| 01 | `options-pricer/` | Does Monte Carlo actually converge to Black-Scholes, how fast, and where does the model itself break? | [options.html](https://aditya2375.github.io/quant-lab/options.html) |
+| 02 | `pairs-trading/` | Can a cointegration spread strategy survive honest out-of-sample testing with transaction costs? | in build |
+| 03 | `vol-forecaster/` | Can machine learning beat GARCH(1,1) at forecasting realized volatility? | in build |
 
-Monte Carlo estimates annual log-return means, so simulation now uses that mean directly instead of subtracting half the variance a second time. Covariance is checked positive semidefinite and singular matrices supported. Simulation dimensions and total allocation are bounded.
+## The rules every study follows
 
-Pairs now tests and fits log prices, trades the matching log spread, separates formation/trading dates, rejects failed screens, normalizes illustrative leg returns by gross exposure and charges on the lagged executed position changes. It is not necessarily dollar-neutral and still omits borrow, financing and realistic execution costs. Historical pair p-values and performance must not be reused.
+- **Pinned inputs.** Every market series is a CSV in `data/raw/` with row counts, date ranges
+  and sha256 hashes in `data/manifest.json` (fetched with `scripts/fetch_data.py`, free Yahoo
+  Finance data via yfinance). No number depends on a provider serving the same bytes twice.
+- **No lookahead.** Signals use yesterday's information or less; formation and trading windows
+  are disjoint; walk-forward splits are explicit.
+- **Costs are charged.** Every backtest states its transaction-cost assumption in basis points
+  and applies it to every executed leg.
+- **Errors come with bars.** Simulation results carry standard errors and confidence intervals.
+  Forecasts are scored out-of-sample with named loss functions.
+- **Limits are stated.** Each study ships an honest-limits note: what the model assumes, where
+  it breaks, and what the results do not show.
 
-Performance drawdown now includes the initial unit-capital peak. Invalid return paths/prices and insufficient histories are rejected. Price caches are keyed by ticker plus requested period with validated symbols; old filename caches are retained but ignored. Prices must be finite/positive with sorted unique dates. Yahoo downloads have a bounded timeout.
+## Testing
 
-## Reproduction status
+```
+pip install -r requirements.txt
+python3 -m unittest discover -s tests   # engine correctness + cross-checks
+node tests/test_engine_js.mjs           # browser engine vs quadrature references
+```
 
-Original adjusted-price snapshots and package versions were not archived. A fixed random seed does not reproduce changing market data or provider revisions. Corrected code passes deterministic synthetic tests, not a rerun against the original market sample. Before publishing results, rerun all methods, archive exact inputs with dates/hashes and dependency versions, and inspect generated charts and metrics. Parameter changes/selection bias remain meaningful risks.
+The JavaScript engine in `docs/assets/engine.js` (which powers the live demos) agrees with the
+closed form to ~1e-13 and is pinned against scipy-quadrature reference values.
 
-Install requirements.txt and run each Python script as documented in its folder. No paid data or brokerage action. Tests: python -m unittest discover -s tests.
+## Earlier work
 
-Support: adityakulkarnicoding@gmail.com
+`monte-carlo-risk/`, `pairs-trading/` (v1) and `ma-crossover/` were the first pass. An audit
+found method bugs (double-counted drift drag, level/log spread mismatch, drawdown without the
+initial peak); the old metrics were withdrawn and the corrected code is kept for provenance.
+Study 02 is a ground-up rewrite of the pairs idea under the rules above.
+
+Educational only. Not investment advice.
+Contact: adityakulkarnicoding@gmail.com
